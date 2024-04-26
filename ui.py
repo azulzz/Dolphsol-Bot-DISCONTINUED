@@ -5,12 +5,14 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 TOKEN = config.get("BOT", "token")
+USERID = config.get("USER", "userid")
 
 class DiscordBotUI:
-    def __init__(self, start_callback, stop_callback, token_callback):
+    def __init__(self, start_callback, stop_callback, token_callback, userid_callback):
         self.start_callback = start_callback
         self.stop_callback = stop_callback
         self.token_callback = token_callback
+        self.userid_callback = userid_callback
 
         self.mainwindow = tk.Tk()
         self.mainwindow.title("Dolphsol Bot")
@@ -36,9 +38,11 @@ class DiscordBotUI:
         self.token_entry.bind('<KeyRelease>', self.token_bot_handler)
 
         # Label and entry for Discord User ID
-        tk.Label(token_frame, text="Discord User ID: ").grid(row=1, column=0, sticky="w")
-        self.token_entry_2 = tk.Entry(token_frame, width=30)
-        self.token_entry_2.grid(row=1, column=1, padx=5)
+        tk.Label(token_frame, text="Your Discord User ID: ").grid(row=1, column=0, sticky="w")
+        self.userid_entry = tk.Entry(token_frame, width=30)
+        self.userid_entry.grid(row=1, column=1, padx=5)
+        self.userid_entry.insert(0, str(USERID))
+        self.userid_entry.bind('<KeyRelease>', self.userid_handler)
 
         button_frame = tk.Frame(self.mainwindow, pady=20)
         button_frame.pack()
@@ -65,11 +69,16 @@ class DiscordBotUI:
     def start_bot_wrapper(self):
         self.start_bot_handler()
 
-
     def token_bot_handler(self, event):
         token = self.token_entry.get().strip()
         if token:
             self.token_callback(token)
+
+    def userid_handler(self, event):
+        userid = self.userid_entry.get().strip()
+        if userid:
+            self.userid_callback(userid)
+
 
     def stop_bot_handler(self):
         print("Stopping bot...")
