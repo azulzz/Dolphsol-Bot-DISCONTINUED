@@ -14,7 +14,7 @@ A discord bot utility for the Dolphsol Macro in Sol's RNG
 - More coming soon..
 ## Installation
 
-Tutorial: https://youtube.com
+Tutorial: (coming soon)
 ## Authors
 
 - [@DevAnxllty](https://github.com/DevAnxllty)
