@@ -8,6 +8,7 @@ A discord bot utility for the Dolphsol Macro in Sol's RNG
   - Restart
   - Inventory {Gears/Items}
   - Screenshot
+  - More commands planned..
 - Control your Dolphsol Macro, away from your computer
 - Easy to use
 - Protection against other people messing around with your macro
