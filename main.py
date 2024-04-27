@@ -1,4 +1,4 @@
-import asyncio, discord, threading, configparser, pyautogui, os, sys, pygetwindow as gw, autoit, time
+import asyncio, discord, threading, configparser, pyautogui, os, sys, pygetwindow as gw, autoit
 from discord import app_commands
 from discord.ext import commands
 import tkinter.messagebox
@@ -9,6 +9,8 @@ config.read('config.ini')
 
 TOKEN = config.get("BOT", "token")
 USERID = config.get("USER", "userid")
+
+botrunning = False
 
 # Initialize Discord bot
 intents = discord.Intents.all()
@@ -36,17 +38,22 @@ def setUserid(userid):
 
 def start_bot(token):
     try:
-        bot.run(token, reconnect=True)
+        if not botrunning:
+            bot.run(token, reconnect=True)
+        else:
+            tkinter.messagebox.showerror("Error", f"Failed to start bot: Your bot is already running!")
     except Exception as e:
         print(e)
         tkinter.messagebox.showerror("Error", f"Failed to start bot: {e}")
         os.execl(sys.executable, sys.executable, *sys.argv)
 @bot.event
 async def on_ready():
+    global botrunning
     await bot.tree.sync()
     print("Connected")
     # tkinter.messagebox.showinfo("Dolphsol Bot", "Your bot has successfully connected")
     pyautogui.alert(text='Your bot has successfully connected', title='Dolphsol Bot', button='OK')
+    botrunning = True
 
 @bot.tree.command(name="restart", description="Restarts your macro")
 async def restart(interaction: discord.Interaction):
@@ -65,6 +72,15 @@ async def screenshot(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This isn't your macro!", ephemeral=True)
 
+def FocusRoblox():
+    hwnd = gw.getWindowsWithTitle('Roblox')
+    if hwnd != []:
+        try:
+            hwnd[0].activate()
+        except:
+            hwnd[0].minimize()
+            hwnd[0].maximize()
+
 @bot.tree.command(name="inventory",description="Views your inventory")
 @app_commands.choices(options = [
     app_commands.Choice(name="Gear",value="gear"),
@@ -72,26 +88,32 @@ async def screenshot(interaction: discord.Interaction):
 ])
 async def inventory(interaction: discord.Interaction, options: app_commands.Choice[str]):
     if str(interaction.user.id) == str(USERID):
-        await interaction.response.send_message("Viewing your inventory..")
+        await interaction.response.send_message("Viewing your inventory.. This might take some time!")
         pyautogui.press('f3')
         await asyncio.sleep(1)
-        hwnd = gw.getWindowsWithTitle('Roblox')
-        if hwnd != []:
-            try:
-                hwnd[0].activate()
-            except:
-                hwnd[0].minimize()
-                hwnd[0].maximize()
-        if pyautogui.pixelMatchesColor(425, 127, (255, 255, 255)):
-            autoit.mouse_click("left", 290, 100)
-        if pyautogui.pixelMatchesColor(30, 27, (255, 255, 255)):
+        FocusRoblox()
+        await asyncio.sleep(0.5)
+        if pyautogui.pixelMatchesColor(30, 27, (255, 255, 255)): # Escape open
             autoit.mouse_click("left", 30, 27)
-        if pyautogui.pixelMatchesColor(508, 793, (255, 255, 255)):
-            autoit.mouse_click("left", 40, 443)
-        autoit.mouse_click("left", 291, 98, speed=2)
-        autoit.mouse_click("left", 40, 443)
+            await asyncio.sleep(0.5)
+        if pyautogui.pixelMatchesColor(80, 25, (255, 255, 255)): # Chat Open
+            autoit.mouse_click("left", 80, 25)
+            await asyncio.sleep(0.5)
+        if pyautogui.pixelMatchesColor(425, 127, (255, 255, 255)): # Collection Back Button Open
+            autoit.mouse_click("left", 290, 100)
+            await asyncio.sleep(0.5)
+
+        if pyautogui.pixelMatchesColor(39, 744, (255, 255, 255)): # If Private Server Owner
+            if pyautogui.pixelMatchesColor(508, 793, (255, 255, 255)): # Inventory Open
+                autoit.mouse_click("left", 38, 473)
+            autoit.mouse_click("left", 38, 473)
+        else:
+            if pyautogui.pixelMatchesColor(508, 793, (255, 255, 255)): # Inventory Open
+                autoit.mouse_click("left", 40,508)
+            autoit.mouse_click("left", 40,508)
+        
         if (options.value == 'items'):
-            autoit.mouse_click("left", 1265, 294, speed=2)
+            autoit.mouse_click("left", 1265, 294)
             pyautogui.screenshot("screenshot.png")
         elif (options.value == 'gear'):
             autoit.mouse_click("left", 955,295, speed=2)
@@ -100,10 +122,54 @@ async def inventory(interaction: discord.Interaction, options: app_commands.Choi
         embed.set_image(url="attachment://screenshot.png")
         file = discord.File("screenshot.png", filename="screenshot.png")
         await interaction.edit_original_response(embed=embed, attachments=[file])
-        autoit.mouse_click("left", 40, 443, speed=2)
+        if pyautogui.pixelMatchesColor(39, 744, (255, 255, 255)): # If Private Server Owner
+            autoit.mouse_click("left", 38, 473)
+        else:
+            autoit.mouse_click("left", 40,508)
         pyautogui.press('f1')
     else:
         await interaction.response.send_message("This isn't your macro!", ephemeral=True)
+
+@bot.tree.command(name="storage",description="Views your storage")
+async def storage(interaction: discord.Interaction):
+    await interaction.response.send_message("Viewing your storage.. This might take some time!")
+    pyautogui.press('f3')
+    await asyncio.sleep(1)
+    FocusRoblox()
+    await asyncio.sleep(0.5)
+    if pyautogui.pixelMatchesColor(30, 27, (255, 255, 255)): # Escape open
+        autoit.mouse_click("left", 30, 27)
+        await asyncio.sleep(0.5)
+    if pyautogui.pixelMatchesColor(80, 25, (255, 255, 255)): # Chat Open
+        autoit.mouse_click("left", 80, 25)
+        await asyncio.sleep(0.5)
+    if pyautogui.pixelMatchesColor(425, 127, (255, 255, 255)): # Collection Back Button Open
+        autoit.mouse_click("left", 290, 100)
+        await asyncio.sleep(0.5)
+
+    if pyautogui.pixelMatchesColor(39, 744, (255, 255, 255)): # If Private Server Owner
+        print("Server owner")
+        if pyautogui.pixelMatchesColor(526, 494, (255, 255, 255)): # Check if storage open
+            autoit.mouse_click("left", 36, 338)
+        autoit.mouse_click("left", 36, 338)
+    else: # Not private server owner
+        print("Not server owner")
+        if pyautogui.pixelMatchesColor(526, 494, (255, 255, 255)): # Check if storage open
+            autoit.mouse_click("left", 37, 370)
+        autoit.mouse_click("left", 37, 370)
+    autoit.mouse_move(1042, 437)
+    pyautogui.scroll(-200)
+    pyautogui.screenshot('screenshot.png')
+    embed = discord.Embed(title="Storage Screenshot")
+    embed.set_image(url="attachment://screenshot.png")
+    file = discord.File("screenshot.png", filename="screenshot.png")
+    await interaction.edit_original_response(embed=embed, attachments=[file])
+    pyautogui.scroll(200)
+    if pyautogui.pixelMatchesColor(39, 744, (255, 255, 255)): # If Private Server Owner
+        autoit.mouse_click("left", 36, 338)
+    else:
+        autoit.mouse_click("left", 37, 370)
+    pyautogui.press('f1')
 # Main function to run the DiscordBotUI
 def main():
     # Define the start_bot_thread function
@@ -121,7 +187,6 @@ def main():
         alert = pyautogui.alert(text='You must have 1920x1080 as your screen resolution!', title='Dolphsol Bot')
         if alert == "OK":
             exit()
-
     # Run the UI main loop
     ui.run()
 
