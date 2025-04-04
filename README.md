@@ -6,6 +6,9 @@ A discord bot utility for the Dolphsol Macro in Sol's RNG
 This project has been discontinued, it wont work anymore and it shows up as a trojan. It shows up as a trojan because the python packaging system I used gets flagged by your anti-virus because other malicious people like to use the program I used to hide malware. I even posted up the source code if you would like to search through that and use that instead.
 
 The reason the file is so big, is cause I used my local enviorment so all my pip installations are in it. So there's extra unnecessary libraries that are unneeded for the bot.
+
+I'm also pretty sure I used a lot of Chat GPT for this project 😭
+
 ## Features
 
 - Multiple Commands
